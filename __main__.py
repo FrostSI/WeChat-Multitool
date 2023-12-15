@@ -4,11 +4,11 @@ from openai import OpenAI
 
 wx = uiautomation.WindowControl(ClassName='WeChatMainWndForPC')
 session = wx.ListControl(Name='会话')
-client = OpenAI(api_key= open('API_KEY.txt').readline())
+client = OpenAI(api_key = open('./API_KEY.txt').readline())
 me = ''
 admin = []
 
-lines = open('User_List.txt', encoding = 'utf-8').readlines()
+lines = open('./User_List.txt', encoding = 'utf-8').readlines()
 allowed_senders = {}
 for line in lines:
     line_content = line.replace('\n', '').split(',')
