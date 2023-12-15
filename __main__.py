@@ -52,7 +52,8 @@ while True:
         message_sender = wx.ButtonControl(Name='聊天信息').GetParentControl().GetParentControl().GetParentControl().TextControl().Name
         if message_sender.find('(') and message_sender.find(')'):
             message_sender = message_sender[:message_sender.find('(')-1]
-        print('消息发送者: ' + message_sender + '所有消息发送者：' + allowed_senders)
+        print('消息发送者: ' + message_sender)
+        print(allowed_senders)
         if message_sender in allowed_senders:
             message = wx.ListControl(Name='消息').GetChildren()[-1].Name
             print('发送者: ' + message_sender + '消息: ' + message)
