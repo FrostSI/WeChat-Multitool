@@ -50,9 +50,9 @@ while True:
         print('接收到新消息')
         new_message.Click(simulateMove=False)
         message_sender = wx.ButtonControl(Name='聊天信息').GetParentControl().GetParentControl().GetParentControl().TextControl().Name
-        print('消息发送者: ' + message_sender)
         if message_sender.find('(') and message_sender.find(')'):
             message_sender = message_sender[:message_sender.find('(')-1]
+        print('消息发送者: ' + message_sender + '所有消息发送者：' + allowed_senders)
         if message_sender in allowed_senders:
             message = wx.ListControl(Name='消息').GetChildren()[-1].Name
             print('发送者: ' + message_sender + '消息: ' + message)
