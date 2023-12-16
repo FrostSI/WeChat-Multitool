@@ -10,8 +10,10 @@ log_file = open('./log.txt', 'a', encoding='utf-8')
 me = ''
 admin = []
 
-def Reply_ChatGPT(sender, question_message):
+def Reply_ChatGPT(message_window, sender, question_message):
     success = False
+    wx.SwitchToThisWindow()
+    message_window.Click(simulateMove=False)
     wx.SendKeys(text='让我想想', waitTime=0)
     wx.SendKeys('{Enter}', waitTime=0)
     for tries in range(3):
@@ -21,11 +23,10 @@ def Reply_ChatGPT(sender, question_message):
             Log(sender + ' ' + str(tries + 1) + ' attempt failed')
             continue
         else:
-            wx.SwitchToThisWindow()
-            wx.SendKeys(text=answer_message, waitTime=0)
-            wx.SendKeys('{Enter}', waitTime=0)
+            wx.SendKeys(text = answer_message.replace('\n', '{Shift}{Enter}'), waitTime = 0)
+            wx.SendKeys('{Enter}', waitTime = 0)
             success = True
-            Log(sender + '---question answered')
+            Log(sender + answer_message)
             break
     if not success:
         wx.SwitchToThisWindow()
@@ -38,7 +39,7 @@ def Log(log):
     print(log)
     log_file.write(log + '\n')
 
-Log(datetime.now())
+Log(str(datetime.now()) + '----------------------------------')
 lines = open('./User_List.txt', encoding = 'utf-8').readlines()
 allowed_senders = {}
 for line in lines:
@@ -51,7 +52,7 @@ for line in lines:
     allowed_senders[line_content[0]] = [line_content[1], line_content[2]]
 
 while True:
-    time.sleep(1)
+    time.sleep(0.1)
     new_message = session.TextControl(searchDepth=4)
     if not new_message.Exists(0):
         continue
@@ -63,10 +64,10 @@ while True:
             message_sender = message_sender[:message_sender.find('(')-1]
         if message_sender in allowed_senders:
             message = wx.ListControl(Name='消息').GetChildren()[-1].Name
-            Log('发送者: ' + message_sender + ' | 消息: ' + message)
+            Log(message_sender + ': ' + message)
             if allowed_senders[message_sender][0] == 'individual':
-                Reply_ChatGPT(message_sender, message)
+                Reply_ChatGPT(new_message, message_sender, message)
             elif allowed_senders[message_sender][0] == 'group':
                 prefix = '@' + me + '\u2005'
                 if message.startswith(prefix):
-                    Reply_ChatGPT(message_sender, message)
+                    Reply_ChatGPT(new_message, message_sender, message)
