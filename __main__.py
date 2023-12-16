@@ -6,12 +6,14 @@ from openai import OpenAI
 wx = uiautomation.WindowControl(ClassName='WeChatMainWndForPC')
 session = wx.ListControl(Name='会话')
 client = OpenAI(api_key = open('./API_KEY.txt').readline())
-log_file = open('./log.txt', 'a')
+log_file = open('./log.txt', 'a', encoding='utf-8')
 me = ''
 admin = []
 
 def Reply_ChatGPT(sender, question_message):
     success = False
+    wx.SendKeys(text='让我想想', waitTime=0)
+    wx.SendKeys('{Enter}', waitTime=0)
     for tries in range(3):
         try:
             answer_message = client.chat.completions.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": question_message}]).choices[0].message.content
@@ -23,7 +25,7 @@ def Reply_ChatGPT(sender, question_message):
             wx.SendKeys(text=answer_message, waitTime=0)
             wx.SendKeys('{Enter}', waitTime=0)
             success = True
-            Log(sender + ' question answered')
+            Log(sender + '---question answered')
             break
     if not success:
         wx.SwitchToThisWindow()
@@ -65,6 +67,6 @@ while True:
             if allowed_senders[message_sender][0] == 'individual':
                 Reply_ChatGPT(message_sender, message)
             elif allowed_senders[message_sender][0] == 'group':
-                prefix = '@' + me + ' '
-                if prefix in message:
+                prefix = '@' + me + '\u2005'
+                if message.startswith(prefix):
                     Reply_ChatGPT(message_sender, message)
