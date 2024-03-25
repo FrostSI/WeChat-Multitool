@@ -5,7 +5,7 @@ from openai import OpenAI
 
 wx = uiautomation.WindowControl(ClassName='WeChatMainWndForPC')
 session = wx.ListControl(Name='会话')
-client = OpenAI(api_key = open('./API_KEY.txt').readline())
+client = OpenAI(api_key = open('./API_KEY.txt').readline(), base_url="https://api.moonshot.cn/v1")
 log_file = open('./log.txt', 'a', encoding='utf-8')
 me = ''
 admin = []
