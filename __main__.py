@@ -17,17 +17,17 @@ def Reply_ChatGPT(message_window, sender, question_message):
     wx.SendKeys(text='让我想想', waitTime=0)
     wx.SendKeys('{Enter}', waitTime=0)
     for tries in range(3):
-        #try:
-        answer_message = client.chat.completions.create(model="moonshot-v1-8k", messages=[{"role": "user", "content": question_message}]).choices[0].message.content
-        #except:
-            #Log(sender + ' ' + str(tries + 1) + ' attempt failed')
-            #continue
-        #else:
-        wx.SendKeys(text = answer_message.replace('\n', '{Shift}{Enter}'), waitTime = 0)
-        wx.SendKeys('{Enter}', waitTime = 0)
-        success = True
-        Log(sender + answer_message)
-        break
+        try:
+            answer_message = client.chat.completions.create(model="moonshot-v1-8k", messages=[{"role": "user", "content": question_message}]).choices[0].message.content
+        except:
+            Log(sender + ' ' + str(tries + 1) + ' attempt failed')
+            continue
+        else:
+            wx.SendKeys(text = answer_message.replace('\n', '{Shift}{Enter}'), waitTime = 0)
+            wx.SendKeys('{Enter}', waitTime = 0)
+            success = True
+            Log(sender + answer_message)
+            break
     if not success:
         wx.SwitchToThisWindow()
         wx.SendKeys(text='连接错误', waitTime=0)
