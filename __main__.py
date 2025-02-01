@@ -3,6 +3,8 @@ from datetime import datetime
 import uiautomation
 from openai import OpenAI
 import random
+import threading
+import schedule
 
 wx = uiautomation.WindowControl(ClassName='WeChatMainWndForPC')
 session = wx.ListControl(Name='会话')
@@ -48,6 +50,34 @@ def Log(log):
     log = str(log)
     print(log)
     log_file.write(log + '\n')
+
+def send_status_message(target_user):
+    """发送运行状态消息到指定用户"""
+    time.sleep(random.uniform(0.5, 1))
+    # 切换到目标用户的聊天
+    session.ButtonControl(Name=target_user).Click(simulateMove=False)
+    time.sleep(random.uniform(0.5, 1))
+    # 发送状态消息
+    status_message = f"机器人正在正常运行中 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    wx.SendKeys(text=status_message, waitTime=0)
+    time.sleep(random.uniform(0.5, 1))
+    wx.SendKeys('{Enter}', waitTime=0)
+    Log(f"已发送状态消息给 {target_user}")
+
+def run_schedule():
+    """运行定时任务"""
+    while True:
+        schedule.run_pending()
+        time.sleep(60)  # 每分钟检查一次
+
+# 在主程序开始前设置定时任务
+status_receiver = admin[0]  # 假设发送给第一个管理员
+schedule.every().day.at("06:00").do(send_status_message, status_receiver)
+
+# 启动定时任务线程
+schedule_thread = threading.Thread(target=run_schedule)
+schedule_thread.daemon = True
+schedule_thread.start()
 
 Log(str(datetime.now()) + '----------------------------------')
 lines = open('./User_List.txt', encoding = 'utf-8').readlines()
