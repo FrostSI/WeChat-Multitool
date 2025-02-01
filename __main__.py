@@ -70,15 +70,6 @@ def run_schedule():
         schedule.run_pending()
         time.sleep(60)  # 每分钟检查一次
 
-# 在主程序开始前设置定时任务
-status_receiver = admin[0]  # 假设发送给第一个管理员
-schedule.every().day.at("06:00").do(send_status_message, status_receiver)
-
-# 启动定时任务线程
-schedule_thread = threading.Thread(target=run_schedule)
-schedule_thread.daemon = True
-schedule_thread.start()
-
 Log(str(datetime.now()) + '----------------------------------')
 lines = open('./User_List.txt', encoding = 'utf-8').readlines()
 allowed_senders = {}
@@ -90,6 +81,18 @@ for line in lines:
     elif line_content[2] == 'admin':
         admin.append(line_content[0])
     allowed_senders[line_content[0]] = [line_content[1], line_content[2]]
+
+# 确保有管理员后再设置定时任务
+if admin:
+    status_receiver = admin[0]  # 使用第一个管理员
+    schedule.every().day.at("06:00").do(send_status_message, status_receiver)
+    
+    # 启动定时任务线程
+    schedule_thread = threading.Thread(target=run_schedule)
+    schedule_thread.daemon = True
+    schedule_thread.start()
+else:
+    Log("警告：未找到管理员用户，状态通知功能未启动")
 
 while True:
     time.sleep(0.1)
