@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 import uiautomation
 from openai import OpenAI
+import random
 
 wx = uiautomation.WindowControl(ClassName='WeChatMainWndForPC')
 session = wx.ListControl(Name='会话')
@@ -12,9 +13,13 @@ admin = []
 
 def Reply_ChatGPT(message_window, sender, question_message):
     success = False
+    time.sleep(random.uniform(0.5, 1))
     wx.SwitchToThisWindow()
+    time.sleep(random.uniform(0.5, 1))
     message_window.Click(simulateMove=False)
+    time.sleep(random.uniform(0.5, 1))
     wx.SendKeys(text='让我想想', waitTime=0)
+    time.sleep(random.uniform(0.5, 1))
     wx.SendKeys('{Enter}', waitTime=0)
     for tries in range(3):
         try:
@@ -23,14 +28,19 @@ def Reply_ChatGPT(message_window, sender, question_message):
             Log(sender + ' ' + str(tries + 1) + ' attempt failed')
             continue
         else:
+            time.sleep(random.uniform(0.5, 1))
             wx.SendKeys(text = answer_message.replace('\n', '{Shift}{Enter}'), waitTime = 0)
+            time.sleep(random.uniform(0.5, 1))
             wx.SendKeys('{Enter}', waitTime = 0)
             success = True
             Log(sender + answer_message)
             break
     if not success:
+        time.sleep(random.uniform(0.5, 1))
         wx.SwitchToThisWindow()
+        time.sleep(random.uniform(0.5, 1))
         wx.SendKeys(text='连接错误', waitTime=0)
+        time.sleep(random.uniform(0.5, 1))
         wx.SendKeys('{Enter}', waitTime=0)
         Log(sender + ' question connection failed')
 
@@ -57,7 +67,9 @@ while True:
     if not new_message.Exists(0):
         continue
     if new_message.Name:
+        time.sleep(random.uniform(0.5, 1))
         wx.SwitchToThisWindow()
+        time.sleep(random.uniform(0.5, 1))
         new_message.Click(simulateMove=False)
         message_sender = wx.ButtonControl(Name='聊天信息').GetParentControl().GetParentControl().GetParentControl().TextControl().Name
         if '(' in message_sender and ')' in message_sender:
