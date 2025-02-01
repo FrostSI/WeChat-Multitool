@@ -13,14 +13,20 @@ log_file = open('./log.txt', 'a', encoding='utf-8')
 me = ''
 admin = []
 
+def send_message_with_typing(text, min_char_delay=0.05, max_char_delay=0.2):
+    """模拟人工打字发送消息"""
+    for char in text:
+        wx.SendKeys(text=char, waitTime=0)
+        time.sleep(random.uniform(min_char_delay, max_char_delay))
+
 def Reply_ChatGPT(message_window, sender, question_message):
     success = False
-    time.sleep(random.uniform(0.5, 1))
+    time.sleep(random.uniform(1, 2))  # 增加延迟
     wx.SwitchToThisWindow()
-    time.sleep(random.uniform(0.5, 1))
+    time.sleep(random.uniform(1, 2))  # 增加延迟
     message_window.Click(simulateMove=False)
     time.sleep(random.uniform(0.5, 1))
-    wx.SendKeys(text='让我想想', waitTime=0)
+    send_message_with_typing('让我想想')
     time.sleep(random.uniform(0.5, 1))
     wx.SendKeys('{Enter}', waitTime=0)
     for tries in range(3):
@@ -31,17 +37,25 @@ def Reply_ChatGPT(message_window, sender, question_message):
             continue
         else:
             time.sleep(random.uniform(0.5, 1))
-            wx.SendKeys(text = answer_message.replace('\n', '{Shift}{Enter}'), waitTime = 0)
+            # 使用模拟打字的方式发送消息
+            lines = answer_message.split('\n')
+            for i, line in enumerate(lines):
+                if i > 0:  # 如果不是第一行，先发送换行
+                    wx.SendKeys('{Shift}{Enter}', waitTime=0)
+                    time.sleep(random.uniform(0.2, 0.5))
+                send_message_with_typing(line)
+                time.sleep(random.uniform(0.3, 0.6))  # 每行之间添加额外延迟
+            
             time.sleep(random.uniform(0.5, 1))
-            wx.SendKeys('{Enter}', waitTime = 0)
+            wx.SendKeys('{Enter}', waitTime=0)
             success = True
             Log(sender + answer_message)
             break
     if not success:
-        time.sleep(random.uniform(0.5, 1))
+        time.sleep(random.uniform(1, 2))  # 增加延迟
         wx.SwitchToThisWindow()
-        time.sleep(random.uniform(0.5, 1))
-        wx.SendKeys(text='连接错误', waitTime=0)
+        time.sleep(random.uniform(1, 2))  # 增加延迟
+        send_message_with_typing('连接错误')
         time.sleep(random.uniform(0.5, 1))
         wx.SendKeys('{Enter}', waitTime=0)
         Log(sender + ' question connection failed')
@@ -53,13 +67,14 @@ def Log(log):
 
 def send_status_message(target_user):
     """发送运行状态消息到指定用户"""
-    time.sleep(random.uniform(0.5, 1))
+    # 增加切换聊天的随机延迟到1-2秒
+    time.sleep(random.uniform(1, 2))
     # 切换到目标用户的聊天
     session.ButtonControl(Name=target_user).Click(simulateMove=False)
-    time.sleep(random.uniform(0.5, 1))
+    time.sleep(random.uniform(1, 2))
     # 发送状态消息
     status_message = f"机器人正在正常运行中 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    wx.SendKeys(text=status_message, waitTime=0)
+    send_message_with_typing(status_message)
     time.sleep(random.uniform(0.5, 1))
     wx.SendKeys('{Enter}', waitTime=0)
     Log(f"已发送状态消息给 {target_user}")
